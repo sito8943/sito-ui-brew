@@ -1,0 +1,162 @@
+{
+  "entities": {
+    "account": {
+      "singular": "Account",
+      "plural": "Accounts"
+    },
+    "currency": {
+      "singular": "Currency",
+      "plural": "Currencies"
+    },
+    "transaction": {
+      "singular": "Transaction",
+      "plural": "Transactions"
+    },
+    "transactionCategory": {
+      "singular": "Category",
+      "plural": "Categories"
+    }
+  },
+  "base": {
+    "name": {
+      "label": "Name",
+      "required": "Name is required"
+    },
+    "description": {
+      "label": "Description",
+      "empty": "No description",
+      "placeholder": "Some description"
+    },
+    "id": {
+      "label": "Id"
+    },
+    "lockedBy": {
+      "label": "Locked By"
+    },
+    "deleted": {
+      "label": "Deleted",
+      "filter": "Show deleted"
+    },
+    "updatedAt": {
+      "label": "Updated At"
+    },
+    "createdAt": {
+      "label": "Created At"
+    }
+  },
+  "user": {
+    "name": {
+      "label": "Name",
+      "placeholder": "Ex: John Doe",
+      "required": "Name is required"
+    },
+    "email": {
+      "label": "Email",
+      "placeholder": "Ex: email@provider.com",
+      "unique": "There is a user with that email already",
+      "required": "Email is required",
+      "notFound": "User not found"
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "Ex: ********",
+      "required": "Password is required",
+      "wrongPassword": "Wrong password"
+    },
+    "rPassword": {
+      "label": "Confirm password",
+      "placeholder": "Ex: ********"
+    }
+  },
+  "account": {
+    "name": {
+      "placeholder": "Ex: Personal",
+      "unique": "There is a account with that name already"
+    },
+    "type": {
+      "label": "Type",
+      "placeholder": "Select a type",
+      "required": "Type is required",
+      "values": {
+        "Physical": "Physical",
+        "Card": "Digital"
+      }
+    },
+    "currency": {
+      "label": "Currency",
+      "placeholder": "Select a currency",
+      "required": "Currency is required"
+    },
+    "balance": {
+      "initial": "Initial balance",
+      "label": "Balance",
+      "placeholder": "Ex: 600",
+      "greaterThan0": "Insufficient balance"
+    }
+  },
+  "transaction": {
+    "amount": {
+      "label": "Amount",
+      "placeholder": "Ex: 100.00",
+      "required": "Amount is required"
+    },
+    "description": {
+      "init": "Automatically created by initial balance"
+    },
+    "category": {
+      "label": "Category",
+      "placeholder": "Select an category",
+      "required": "Category is required"
+    },
+    "account": {
+      "label": "Account",
+      "placeholder": "Select an account",
+      "required": "Account is required"
+    },
+    "date": {
+      "label": "Date",
+      "required": "Date is required"
+    }
+  },
+  "transactionCategory": {
+    "name": {
+      "label": "Name",
+      "init": "Initial Transaction",
+      "placeholder": "Ex: Food"
+    },
+    "description": {
+      "init": "Automatically created by initial balance"
+    },
+    "type": {
+      "label": "Type",
+      "placeholder": "Select a type",
+      "required": "Type is required",
+      "values": {
+        "In": "Income",
+        "Out": "Expense"
+      }
+    }
+  },
+  "currency": {
+    "name": {
+      "unique": "There is a currency with that name already",
+      "placeholder": "Ex: USD"
+    },
+    "symbol": {
+      "required": "Symbol is required",
+      "label": "Symbol",
+      "placeholder": "Ex: $"
+    }
+  },
+  "userDashboardCard": {
+    "type": {
+      "label": "Type",
+      "required": "Type is required",
+      "values": {
+        "TypeResume": "Type Resume",
+        "CurrentBalance": "Current Balance",
+        "WeeklySpent": "Weekly Spent"
+      }
+    }
+  }
+}

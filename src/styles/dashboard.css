@@ -1,0 +1,83 @@
+@reference "./variables.css";
+
+.table-headers-cell {
+  @apply rounded-4xl;
+}
+
+.chip-main {
+  @apply py-1;
+}
+
+.text-input,
+.text-input-label,
+.select-input-label {
+  @apply !text-text disabled:!text-gray-500;
+}
+
+.select-input {
+  @apply !text-text disabled:!text-gray-500;
+}
+
+select > option {
+  color: black !important;
+}
+
+.autocomplete-suggestions-container {
+  @apply border-2 border-border/40 rounded-lg;
+}
+
+.text-input,
+.select-input {
+  @apply border-2 border-border/40 !pl-2 rounded-lg;
+}
+
+.text-input-label,
+.select-input-label {
+  @apply left-2 peer-focus:!left-2;
+}
+
+.autocomplete-input-container,
+.select-input-container,
+.options-widget-container,
+.text-input-container {
+  @apply mb-0 pb-0;
+}
+
+.text-input-label,
+.select-input-label,
+.peer:focus ~ .text-input-label,
+.peer:focus ~ .select-input-label {
+  transform: translateY(-30px);
+  font-weight: 400;
+  top: 10px;
+}
+
+.text-input.has-value ~ .text-input-label,
+.text-input.has-placeholder ~ .text-input-label {
+  font-weight: 400;
+  transform: translateY(-1.75rem);
+}
+
+.text-input-helper-text {
+  @apply text-sm;
+}
+
+.table-empty {
+  border-top: 0;
+}
+
+.filter-dropdown-submit {
+  @apply bg-bg-primary hover:bg-hover-primary text-base;
+}
+
+.filter-container {
+  @apply mb-4 grid grid-cols-4 max-lg:grid-cols-3 max-md:grid-cols-2 max-xs:grid-cols-1 gap-x-6 gap-y-8 p-3;
+}
+
+.filter-dropdown-button {
+  @apply rounded-4xl !px-4 !py-1 cursor-pointer flex items-center gap-2 justify-center;
+}
+
+.filter-dropdown-cancel {
+  @apply border-border text-text border-2 hover:bg-border;
+}

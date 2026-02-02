@@ -9,7 +9,7 @@ import {
   onUninstallProgress,
   uninstallPackage,
   UninstallEventPayload,
-} from "../api/brew";
+} from "../../api/brew";
 
 type Props = {
   item: PackageListItem | null;

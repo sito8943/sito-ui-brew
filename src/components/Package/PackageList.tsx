@@ -1,4 +1,4 @@
-import { PackageListItem } from "../api/brew";
+import { PackageListItem } from "../../api/brew";
 
 type Props = {
   items: PackageListItem[];

@@ -1,0 +1,23 @@
+@reference "./variables.css";
+
+a, button {
+  @apply text-sm font-medium;
+}
+
+input {
+  @apply text-sm text-text-muted;
+}
+
+.input {
+  @apply text-white bg-base border-border border-2 px-4 py-1 rounded-sm;
+}
+
+.input.error {
+  @apply border-red-500;
+}
+
+svg.primary,
+p.primary,
+a.primary {
+  @apply hover:text-hover-primary;
+}
