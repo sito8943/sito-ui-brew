@@ -82,6 +82,18 @@ fn parse_list_output(json: &str, kind: PackageKind) -> Vec<PackageListItem> {
     out
 }
 
+fn parse_list_plain(text: &str, kind: PackageKind) -> Vec<PackageListItem> {
+    text
+        .lines()
+        .map(|l| l.trim())
+        .filter(|l| !l.is_empty())
+        .map(|name| PackageListItem {
+            name: name.to_string(),
+            kind: kind.clone(),
+        })
+        .collect()
+}
+
 fn format_bytes(bytes: u64) -> String {
     const KB: f64 = 1024.0;
     const MB: f64 = 1024.0 * 1024.0;
@@ -120,40 +132,67 @@ fn du_size_bytes(path: &PathBuf) -> Option<u64> {
 
 #[tauri::command]
 fn list_packages() -> Result<Vec<PackageListItem>, String> {
-    // Attempt to list formulas and casks separately, then merge.
+    // Prefer a single JSON call when available, fallback to plain list names.
     let brew = brew_path();
 
-    let formula_out = Command::new(&brew)
-        .args(["list", "--formula", "--json"])
+    let info_out = Command::new(&brew)
+        .args(["info", "--json=v2", "--installed"]) // supported on modern Homebrew
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .output()
         .map_err(|_| "Homebrew not found. Please install Homebrew.".to_string())?;
 
+    if info_out.status.success() {
+        let v: serde_json::Value = serde_json::from_slice(&info_out.stdout)
+            .map_err(|_| "Invalid JSON from Homebrew info".to_string())?;
+        let mut list = Vec::new();
+        if let Some(arr) = v.get("formulae").and_then(|a| a.as_array()) {
+            for e in arr {
+                if let Some(n) = e.get("name").and_then(|v| v.as_str())
+                    .or_else(|| e.get("full_name").and_then(|v| v.as_str()))
+                {
+                    list.push(PackageListItem { name: n.to_string(), kind: PackageKind::Formula });
+                }
+            }
+        }
+        if let Some(arr) = v.get("casks").and_then(|a| a.as_array()) {
+            for e in arr {
+                if let Some(n) = e.get("token").and_then(|v| v.as_str())
+                    .or_else(|| e.get("name").and_then(|v| v.as_str()))
+                {
+                    list.push(PackageListItem { name: n.to_string(), kind: PackageKind::Cask });
+                }
+            }
+        }
+        return Ok(list);
+    }
+
+    // Fallback: older brew that lacks JSON list; use plain text names one per line
+    let formula_out = Command::new(&brew)
+        .args(["list", "--formula", "-1"]) // single column
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .output()
+        .map_err(|_| "Homebrew not found. Please install Homebrew.".to_string())?;
     if !formula_out.status.success() {
-        // If brew exists but command failed, still try to return a helpful error
         let err = String::from_utf8_lossy(&formula_out.stderr).to_string();
         return Err(format!("Failed to list formula packages: {}", err.trim()));
     }
 
     let cask_out = Command::new(&brew)
-        .args(["list", "--cask", "--json"])
+        .args(["list", "--cask", "-1"]) // single column
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .output()
         .map_err(|_| "Homebrew not found. Please install Homebrew.".to_string())?;
-
     if !cask_out.status.success() {
         let err = String::from_utf8_lossy(&cask_out.stderr).to_string();
         return Err(format!("Failed to list cask packages: {}", err.trim()));
     }
 
     let mut list = Vec::new();
-    let formula_json = String::from_utf8_lossy(&formula_out.stdout);
-    list.extend(parse_list_output(&formula_json, PackageKind::Formula));
-    let cask_json = String::from_utf8_lossy(&cask_out.stdout);
-    list.extend(parse_list_output(&cask_json, PackageKind::Cask));
-
+    list.extend(parse_list_plain(&String::from_utf8_lossy(&formula_out.stdout), PackageKind::Formula));
+    list.extend(parse_list_plain(&String::from_utf8_lossy(&cask_out.stdout), PackageKind::Cask));
     Ok(list)
 }
 
