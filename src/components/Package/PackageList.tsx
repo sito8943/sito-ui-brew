@@ -1,5 +1,12 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faExternalLink, faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import {
+  faTrash,
+  faExternalLink,
+  faCircleInfo,
+} from "@fortawesome/free-solid-svg-icons";
+import { array } from "some-javascript-utils";
+import { useEffect, useState } from "react";
+import { fetchSizesMap } from "../../services/packages";
 
 // types
 import { PackageKind, PackageListItem } from "../../api/brew";
@@ -24,6 +31,25 @@ export function PackageList({
   error,
 }: Props) {
   const { t } = useTranslation();
+  const [sizes, setSizes] = useState<Record<string, { human?: string | null }>>({});
+  useEffect(() => {
+    if (!items.length) {
+      setSizes({});
+      return;
+    }
+    let active = true;
+    fetchSizesMap(items).then((map) => {
+      if (!active) return;
+      const reduced: Record<string, { human?: string | null }> = {};
+      Object.entries(map).forEach(([k, v]) => {
+        reduced[k] = { human: v.human };
+      });
+      setSizes(reduced);
+    });
+    return () => {
+      active = false;
+    };
+  }, [items]);
   if (loading)
     return (
       <div className="w-full py-4 flex justify-center">
@@ -33,6 +59,8 @@ export function PackageList({
   if (error) return <div className="list-error">{error}</div>;
   if (!items.length)
     return <div className="list-empty">{t("packages.table.empty")}</div>;
+
+  array.sortBy
 
   return (
     <table className="w-full">
@@ -44,6 +72,7 @@ export function PackageList({
           </div>
         </th>
         <th className="text-start">{t("packages.table.headers.kind")}</th>
+        <th className="text-start w-28">{t("packages.table.headers.size")}</th>
       </tr>
       {items.map((it, i) => (
         <tr
@@ -56,16 +85,24 @@ export function PackageList({
                 <IconButton
                   variant="primary"
                   onClick={() => onSelect(it)}
-                  title={t("_accessibility:actions.openDetails", { name: it.name })}
-                  ariaLabel={t("_accessibility:actions.openDetails", { name: it.name })}
+                  title={t("_accessibility:actions.openDetails", {
+                    name: it.name,
+                  })}
+                  ariaLabel={t("_accessibility:actions.openDetails", {
+                    name: it.name,
+                  })}
                 >
                   <FontAwesomeIcon icon={faCircleInfo} />
                 </IconButton>
                 <IconButton
                   variant="danger"
                   onClick={() => onUninstall && onUninstall(it)}
-                  title={t("_accessibility:actions.uninstall", { name: it.name })}
-                  ariaLabel={t("_accessibility:actions.uninstall", { name: it.name })}
+                  title={t("_accessibility:actions.uninstall", {
+                    name: it.name,
+                  })}
+                  ariaLabel={t("_accessibility:actions.uninstall", {
+                    name: it.name,
+                  })}
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </IconButton>
@@ -88,6 +125,9 @@ export function PackageList({
             <div className="flex justify-start items-center gap-1">
               <PackageKindChip kind={it.kind as PackageKind} />
             </div>
+          </td>
+          <td className="py-1 pr-2 text-sm text-right tabular-nums">
+            {sizes[`${it.kind}:${it.name}`]?.human ?? "—"}
           </td>
         </tr>
       ))}

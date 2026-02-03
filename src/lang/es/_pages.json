@@ -3,7 +3,8 @@
     "table": {
       "headers": {
         "name": "Nombre",
-        "kind": "Tipo"
+        "kind": "Tipo",
+        "size": "Tamaño"
       },
       "empty": "No se encontraron paquetes."
     },

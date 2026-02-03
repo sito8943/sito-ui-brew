@@ -3,7 +3,8 @@
     "table": {
       "headers": {
         "name": "Name",
-        "kind": "Kind"
+        "kind": "Kind",
+        "size": "Size"
       },
       "empty": "No packages found."
     },
