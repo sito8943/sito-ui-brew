@@ -20,8 +20,8 @@
     "@fortawesome/react-fontawesome": "^3.1.1",
     "@loadable/component": "^5.16.7",
     "@tailwindcss/vite": "^4.1.18",
-    "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/api": "^2.10.0",
+    "@tauri-apps/plugin-opener": "^2.10.0",
     "i18next": "^25.8.0",
     "i18next-browser-languagedetector": "^8.2.0",
     "react": "^19.1.0",
@@ -36,7 +36,7 @@
     "use-debounce": "^10.1.0"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2",
+    "@tauri-apps/cli": "^2.10.0",
     "@types/loadable__component": "^5.13.10",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",

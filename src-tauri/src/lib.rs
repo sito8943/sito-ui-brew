@@ -43,9 +43,34 @@ pub struct PackageSizeResult {
 }
 
 fn brew_path() -> String {
-    // Use `brew` from PATH. If PATH lacks it, try common locations.
-    // We don't check existence here; command spawn failures are handled per use.
-    // Do not elevate privileges.
+    use std::env;
+    use std::path::Path;
+
+    // 1) Respect HOMEBREW_PREFIX if set
+    if let Ok(prefix) = env::var("HOMEBREW_PREFIX") {
+        let candidate = Path::new(&prefix).join("bin").join("brew");
+        if candidate.exists() {
+            return candidate.to_string_lossy().to_string();
+        }
+    }
+
+    // 2) Common install locations (Apple Silicon, Intel, Linuxbrew)
+    let common = [
+        "/opt/homebrew/bin/brew",            // Apple Silicon macOS
+        "/usr/local/bin/brew",               // Intel macOS
+        "/home/linuxbrew/.linuxbrew/bin/brew" // Linuxbrew
+    ];
+    for p in common { if Path::new(p).exists() { return p.to_string(); } }
+
+    // 3) Attempt to resolve via `which brew`
+    if let Ok(out) = Command::new("which").arg("brew").stdout(Stdio::piped()).stderr(Stdio::null()).output() {
+        if out.status.success() {
+            let s = String::from_utf8_lossy(&out.stdout).trim().to_string();
+            if !s.is_empty() { return s; }
+        }
+    }
+
+    // 4) Fallback to PATH lookup by name
     "brew".to_string()
 }
 
