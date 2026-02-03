@@ -1,5 +1,12 @@
 {
   "packages": {
+    "filters": {
+      "query": "búsqueda",
+      "kind": "tipo",
+      "sizeMin": "tamaño ≥ {{value}}MB",
+      "sizeMax": "tamaño ≤ {{value}}MB",
+      "clearAll": "Limpiar todo"
+    },
     "table": {
       "headers": {
         "name": "Nombre",

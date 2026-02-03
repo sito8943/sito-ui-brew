@@ -14,7 +14,7 @@ import Button from "../Button";
 
 export default function PackageDrawer() {
   const { t } = useTranslation();
-  const { selected: item, close: closeContext } = useSelectedPackage();
+  const { selected: item, intent, close: closeContext } = useSelectedPackage();
   const controller = useMemo(() => new PackageDrawerController(), []);
   const [state, setState] = useState<PackageDrawerState>(controller.getState());
 
@@ -28,9 +28,16 @@ export default function PackageDrawer() {
   }, [controller]);
 
   useEffect(() => {
-    if (item) controller.attach(item.name, item.kind);
-    else controller.close();
-  }, [item, controller]);
+    if (item) {
+      controller.attach(item.name, item.kind).then(() => {
+        if (intent === "uninstall") {
+          controller.requestUninstall();
+        }
+      });
+    } else {
+      controller.close();
+    }
+  }, [item, intent, controller]);
 
   const {
     open,

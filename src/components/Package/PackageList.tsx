@@ -8,6 +8,7 @@ import { fetchSizesMap } from "../../services/packages";
 import { PackageListItem } from "../../api/brew";
 import PackageTableHeader from "./PackageTableHeader";
 import PackageTableRow from "./PackageTableRow";
+import FilterChipsRow from "./FilterChips";
 import Loading from "../Loading";
 import { useTranslation } from "react-i18next";
 
@@ -17,6 +18,7 @@ type Props = {
   onUninstall?: (item: PackageListItem) => void;
   loading?: boolean;
   error?: string | null;
+  sizesMap?: Record<string, { bytes?: number | null; human?: string | null }>;
 };
 
 export function PackageList({
@@ -25,6 +27,7 @@ export function PackageList({
   onUninstall,
   loading,
   error,
+  sizesMap,
 }: Props) {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -37,6 +40,10 @@ export function PackageList({
   const [sortKey, setSortKey] = useState<"name" | "kind" | "size">(initialSort);
   const [sortAsc, setSortAsc] = useState<boolean>(initialDir);
   useEffect(() => {
+    if (sizesMap) {
+      setSizes(sizesMap);
+      return;
+    }
     if (!items.length) {
       setSizes({});
       return;
@@ -56,7 +63,7 @@ export function PackageList({
     return () => {
       active = false;
     };
-  }, [items]);
+  }, [items, sizesMap]);
   const rows = useMemo(() => {
     const copy = items.slice();
     if (sortKey === "name" || sortKey === "kind") {
@@ -99,6 +106,7 @@ export function PackageList({
     return <div className="list-empty">{t("packages.table.empty")}</div>;
   return (
     <table className="w-full">
+      <FilterChipsRow />
       <PackageTableHeader
         sortKey={sortKey}
         sortAsc={sortAsc}

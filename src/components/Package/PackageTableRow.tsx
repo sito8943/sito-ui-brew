@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo, faExternalLink, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "react-i18next";
 import type { PackageKind, PackageListItem } from "../../api/brew";
+import { useSelectedPackage } from "../../context/SelectedPackageContext";
 import IconButton from "../IconButton";
 import PackageKindChip from "./PackageKindChip";
 
@@ -15,6 +16,7 @@ type Props = {
 
 export default function PackageTableRow({ item, index, onSelect, onUninstall, sizeHuman }: Props) {
   const { t } = useTranslation();
+  const { promptUninstall } = useSelectedPackage();
   return (
     <tr key={`${item.kind}:${item.name}`} className={`w-full ${index % 2 ? "bg-primary/10" : ""}`}>
       <td className="py-1 pl-2">
@@ -30,7 +32,7 @@ export default function PackageTableRow({ item, index, onSelect, onUninstall, si
             </IconButton>
             <IconButton
               variant="danger"
-              onClick={() => onUninstall && onUninstall(item)}
+              onClick={() => (promptUninstall ? promptUninstall(item) : onUninstall && onUninstall(item))}
               title={t("_accessibility:actions.uninstall", { name: item.name })}
               ariaLabel={t("_accessibility:actions.uninstall", { name: item.name })}
             >
@@ -57,4 +59,3 @@ export default function PackageTableRow({ item, index, onSelect, onUninstall, si
     </tr>
   );
 }
-

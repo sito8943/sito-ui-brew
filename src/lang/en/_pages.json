@@ -1,5 +1,12 @@
 {
   "packages": {
+    "filters": {
+      "query": "q",
+      "kind": "kind",
+      "sizeMin": "size ≥ {{value}}MB",
+      "sizeMax": "size ≤ {{value}}MB",
+      "clearAll": "Clear all"
+    },
     "table": {
       "headers": {
         "name": "Name",

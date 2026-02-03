@@ -29,10 +29,10 @@ const IconButton = forwardRef<HTMLButtonElement, Props>(function IconButton(
     "transition-colors duration-200 w-8 h-8 flex items-center justify-center rounded-full";
 
   const variantClass: Record<Variant, string> = {
-    primary: "text-bg-primary hover:text-hover-primary hover:bg-bg-primary/10",
+    primary: "text-bg-primary hover:text-hover-primary hover:bg-bg-primary/20",
     secondary:
-      "text-text-muted hover:text-text hover:bg-base-dark/20",
-    danger: "text-red-500 hover:bg-bg-error/10",
+      "text-text-muted hover:text-text hover:bg-base-dark/60",
+    danger: "text-red-500 hover:bg-bg-error/20",
   };
 
   return (
