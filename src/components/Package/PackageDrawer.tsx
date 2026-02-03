@@ -10,6 +10,7 @@ import {
   PackageDrawerState,
 } from "../../controllers/packages/PackageDrawerController";
 import Loading from "../Loading";
+import Button from "../Button";
 
 export default function PackageDrawer() {
   const { t } = useTranslation();
@@ -69,15 +70,15 @@ export default function PackageDrawer() {
       title={title}
       footer={
         <div className="flex justify-end gap-2">
-          <button
-            className="text-red-600 border border-red-200 hover:bg-red-200 px-3 py-1 rounded-md disabled:opacity-50 transition duration-200"
+          <Button
+            variant="danger"
             disabled={!canUninstall}
             onClick={() => controller.requestUninstall()}
           >
             {uninstalling
               ? t("packages.drawer.actions.uninstalling")
               : t("packages.drawer.actions.uninstall")}
-          </button>
+          </Button>
         </div>
       }
     >
@@ -162,18 +163,12 @@ export default function PackageDrawer() {
               })}
             </div>
             <div className="flex justify-end gap-2">
-              <button
-                className="px-3 py-1 rounded-md border border-gray-200"
-                onClick={() => controller.cancelConfirm()}
-              >
+              <Button variant="ghost" onClick={() => controller.cancelConfirm()}>
                 {t("packages.drawer.actions.cancel")}
-              </button>
-              <button
-                className="px-3 py-1 rounded-md border border-red-200 text-red-600 hover:bg-red-50"
-                onClick={() => controller.confirmUninstall()}
-              >
+              </Button>
+              <Button variant="danger" onClick={() => controller.confirmUninstall()}>
                 {t("packages.drawer.actions.uninstall")}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
