@@ -7,7 +7,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 // types
-import { PackageListItem } from "../../api/brew";
+import { PackageKind, PackageListItem } from "../../api/brew";
+import PackageKindChip from "./PackageKindChip";
 import IconButton from "../IconButton";
 
 type Props = {
@@ -86,19 +87,8 @@ export function PackageList({
             </div>
           </td>
           <td className="py-1">
-            <div className="flex justify-start items-center gap-1 group">
-              <a
-                className={`rounded-4xl px-3 py-0.5 ${it.kind} hover:bg-primary`}
-                href={`https://formulae.brew.sh/${it.kind}/`}
-                target="_blank"
-                rel="noopener"
-              >
-                {it.kind}
-                <FontAwesomeIcon
-                  icon={faExternalLink}
-                  className="ml-1 -mt-0.5 text-xs group-hover:opacity-100 opacity-0 transition-opacity duration-200"
-                />
-              </a>
+            <div className="flex justify-start items-center gap-1">
+              <PackageKindChip kind={it.kind as PackageKind} />
             </div>
           </td>
         </tr>

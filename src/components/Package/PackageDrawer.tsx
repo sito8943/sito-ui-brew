@@ -7,6 +7,8 @@ import {
   PackageSizeResult,
   UninstallEventPayload,
 } from "../../api/brew";
+import PackageKindChip from "./PackageKindChip";
+import InfoItem from "../InfoItem";
 import { useSelectedPackage } from "../../context/SelectedPackageContext";
 
 export default function PackageDrawer() {
@@ -96,7 +98,9 @@ export default function PackageDrawer() {
 
   const title = (
     <div className="min-w-0">
-      <div className="text-sm text-gray-500 truncate">{kind}</div>
+      <div className="truncate">
+        <PackageKindChip kind={kind} link={false} />
+      </div>
       <div className="text-base font-semibold truncate">{name}</div>
     </div>
   );
@@ -129,41 +133,32 @@ export default function PackageDrawer() {
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="flex items-center justify-between border border-gray-200 rounded-md px-3 py-2">
-              <span className="text-xs text-gray-500">Version</span>
-              <span className="text-sm">{info.version ?? "—"}</span>
-            </div>
-            <div className="flex items-center justify-between border border-gray-200 rounded-md px-3 py-2">
-              <span className="text-xs text-gray-500">Homepage</span>
-              <span className="text-sm truncate max-w-[240px] text-right">
-                {info.homepage ? (
-                  <a
-                    className="hover:text-bg-primary underline"
-                    href={info.homepage}
-                    target="_blank"
-                    rel="noopener"
-                  >
-                    {info.homepage}
-                  </a>
-                ) : (
-                  "—"
-                )}
-              </span>
-            </div>
-            <div className="flex items-center justify-between border border-gray-200 rounded-md px-3 py-2">
-              <span className="text-xs text-gray-500">Tap</span>
-              <span className="text-sm">{info.tap ?? "—"}</span>
-            </div>
-            <div className="flex items-center justify-between border border-gray-200 rounded-md px-3 py-2">
-              <span className="text-xs text-gray-500">Maintainers</span>
-              <span className="text-sm truncate max-w-[240px] text-right">
+            <InfoItem label="Version" value={info.version ?? "—"} />
+            <InfoItem label="Tap" value={info.tap ?? "—"} />
+            <InfoItem label="Maintainers">
+              <span className="truncate max-w-[240px]">
                 {info.maintainers?.join(", ") ?? "—"}
               </span>
-            </div>
-            <div className="flex items-center justify-between border border-gray-200 rounded-md px-3 py-2 sm:col-span-2">
-              <span className="text-xs text-gray-500">Size</span>
-              <span className="text-sm">{size?.human ?? "—"}</span>
-            </div>
+            </InfoItem>
+            <InfoItem label="Homepage" className="sm:col-span-2">
+              {info.homepage ? (
+                <a
+                  className="hover:text-bg-primary underline truncate max-w-[240px]"
+                  href={info.homepage}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  {info.homepage}
+                </a>
+              ) : (
+                "—"
+              )}
+            </InfoItem>
+            <InfoItem
+              label="Size"
+              value={size?.human ?? "—"}
+              className="sm:col-span-2"
+            />
           </div>
 
           {progress.length > 0 && (
