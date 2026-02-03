@@ -1,7 +1,7 @@
 function Footer() {
   return (
     <footer>
-      <div className="text-center p-4 text-sm text-gray-500">
+      <div className="text-center px-4 pb-2 text-sm text-gray-500">
         <p className="max-w-md mx-auto">
           This is not an official Homebrew product.{" "}
           <a

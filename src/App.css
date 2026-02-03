@@ -64,12 +64,6 @@ label,
   transition-delay: 1s;
 }
 
-main {
-  height: 100%;
-  width: 100%;
-  @apply flex flex-col flex-1;
-}
-
 .opacity {
   animation: opacity 300ms ease-in-out;
 }

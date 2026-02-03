@@ -54,8 +54,8 @@ function Packages() {
   // When uninstall succeeds, a global event updates the list (see useEffect below)
 
   return (
-    <div className="flex flex-col h-full p-4 gap-4">
-      <div className="border-1 border-gray-200 p-4 rounded-md h-[calc(100vh-166px)] overflow-y-auto">
+    <div className="flex flex-col h-full px-4 py-2 gap-4">
+      <div className="border-1 border-gray-200 p-4 rounded-md h-[calc(100vh-128px)] overflow-y-auto">
         <PackageList
           items={filtered}
           loading={loading}
