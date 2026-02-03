@@ -4,14 +4,15 @@ import { useState, useEffect, useMemo } from "react";
 import { listPackages, PackageListItem } from "../../api/brew";
 
 // components
-import { PackageDetails, PackageList } from "../../components";
+import { PackageList } from "../../components";
+import { useSelectedPackage } from "../../context/SelectedPackageContext";
 
 function Packages() {
   const [items, setItems] = useState<PackageListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selected, setSelected] = useState<PackageListItem | null>(null);
-  const [filter, setFilter] = useState("");
+  const { open: openPackage } = useSelectedPackage();
+  const [filter] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -32,16 +33,25 @@ function Packages() {
     };
   }, []);
 
+  // Remove uninstalled item when notified by drawer
+  useEffect(() => {
+    function onUninstalled(e: Event) {
+      const ce = e as CustomEvent<{ name: string }>;
+      const pkgName = ce.detail?.name;
+      if (!pkgName) return;
+      setItems((prev) => prev.filter((i) => i.name !== pkgName));
+    }
+    window.addEventListener("package-uninstalled", onUninstalled as EventListener);
+    return () => window.removeEventListener("package-uninstalled", onUninstalled as EventListener);
+  }, []);
+
   const filtered = useMemo(() => {
     const q = filter.trim().toLowerCase();
     if (!q) return items;
     return items.filter((i) => i.name.toLowerCase().includes(q));
   }, [filter, items]);
 
-  function handleUninstalled(name: string) {
-    setItems((prev) => prev.filter((i) => i.name !== name));
-    setSelected(null);
-  }
+  // When uninstall succeeds, a global event updates the list (see useEffect below)
 
   return (
     <div className="flex flex-col h-full p-4 gap-4">
@@ -50,15 +60,10 @@ function Packages() {
           items={filtered}
           loading={loading}
           error={error}
-          onSelect={setSelected}
+          onSelect={openPackage}
         />
       </div>
-
-      <PackageDetails
-        item={selected}
-        onClose={() => setSelected(null)}
-        onUninstalled={handleUninstalled}
-      />
+      {/* Uninstall handling remains here if needed later */}
     </div>
   );
 }
