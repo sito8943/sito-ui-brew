@@ -152,7 +152,7 @@ export default function PackageDrawer() {
             onClick={() => controller.cancelConfirm()}
           />
           <div className="absolute inset-x-4 top-24 rounded-md border border-gray-200 bg-white shadow-lg p-4 max-w-md mx-auto">
-            <div className="text-base font-semibold mb-1">
+            <div className="text-red-600 font-semibold mb-1">
               {t("packages.drawer.actions.confirmTitle")}
             </div>
             <div className="text-sm mb-3">
