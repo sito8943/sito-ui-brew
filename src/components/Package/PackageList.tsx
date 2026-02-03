@@ -8,6 +8,7 @@ import {
 
 // types
 import { PackageListItem } from "../../api/brew";
+import IconButton from "../IconButton";
 
 type Props = {
   items: PackageListItem[];
@@ -53,20 +54,22 @@ export function PackageList({
           <td className="py-1 pl-2">
             <div className="flex justify-start items-center gap-2">
               <div className="flex gap-1">
-                <button
-                  className="text-bg-primary hover:text-blue-500 hover:bg-bg-primary/10 transition-colors duration-200 w-8 h-8 flex items-center justify-center rounded-full"
+                <IconButton
+                  variant="primary"
                   onClick={() => onSelect(it)}
                   title={it.name}
+                  ariaLabel={`Open details for ${it.name}`}
                 >
                   <FontAwesomeIcon icon={faCircleInfo} />
-                </button>
-                <button
-                  className="text-bg-primary hover:text-red-500 hover:bg-bg-error/10 transition-colors duration-200 w-8 h-8 flex items-center justify-center rounded-full"
+                </IconButton>
+                <IconButton
+                  variant="danger"
                   onClick={() => onUninstall && onUninstall(it)}
                   title={`Uninstall ${it.name}`}
+                  ariaLabel={`Uninstall ${it.name}`}
                 >
                   <FontAwesomeIcon icon={faTrash} />
-                </button>
+                </IconButton>
               </div>
               <a
                 className="hover:text-bg-primary group flex items-center gap-1"

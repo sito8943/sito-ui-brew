@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 
 // api
-import { listPackages, PackageListItem } from "../../api/brew";
+import { brew, PackageListItem } from "../../api/brew";
 
 // components
 import { PackageList } from "../../components";
@@ -17,7 +17,7 @@ function Packages() {
   useEffect(() => {
     let active = true;
     setLoading(true);
-    listPackages()
+    brew.listPackages()
       .then((res) => {
         if (!active) return;
         // Basic sort by name

@@ -1,4 +1,7 @@
+import { faClose } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useRef } from "react";
+import IconButton from "./IconButton";
 
 type DrawerProps = {
   open: boolean;
@@ -63,14 +66,15 @@ export default function Drawer({
               title
             )}
           </div>
-          <button
-            ref={closeBtnRef}
+          <IconButton
             onClick={onClose}
-            aria-label="Close"
-            className="text-gray-500 hover:text-gray-800 hover:bg-gray-100 dark:hover:bg-white/10 w-8 h-8 rounded-full flex items-center justify-center"
+            title="Close"
+            ariaLabel="Close drawer"
+            ref={closeBtnRef}
+            variant="danger"
           >
-            ✕
-          </button>
+            <FontAwesomeIcon icon={faClose} />
+          </IconButton>
         </div>
 
         {/* Body */}
@@ -86,4 +90,3 @@ export default function Drawer({
     </div>
   );
 }
-

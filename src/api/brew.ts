@@ -24,28 +24,35 @@ export type PackageSizeResult = {
   human?: string | null;
 };
 
-export async function listPackages(): Promise<PackageListItem[]> {
-  return await invoke<PackageListItem[]>("list_packages");
-}
+export class BrewClient {
+  async listPackages(): Promise<PackageListItem[]> {
+    return await invoke<PackageListItem[]>("list_packages");
+  }
 
-export async function getPackageInfo(name: string): Promise<PackageInfo> {
-  return await invoke<PackageInfo>("get_package_info", { name });
-}
+  async getPackageInfo(name: string): Promise<PackageInfo> {
+    return await invoke<PackageInfo>("get_package_info", { name });
+  }
 
-export async function getPackageSize(
-  name: string,
-  kind: PackageKind
-): Promise<PackageSizeResult> {
-  return await invoke<PackageSizeResult>("get_package_size", { name, kind });
-}
+  async getPackageSize(
+    name: string,
+    kind: PackageKind
+  ): Promise<PackageSizeResult> {
+    return await invoke<PackageSizeResult>("get_package_size", { name, kind });
+  }
 
-export async function uninstallPackage(
-  name: string,
-  kind: PackageKind
-): Promise<void> {
-  await invoke("uninstall_package", {
-    req: { name, kind, confirm: true },
-  });
+  async uninstallPackage(name: string, kind: PackageKind): Promise<void> {
+    await invoke("uninstall_package", {
+      req: { name, kind, confirm: true },
+    });
+  }
+
+  onUninstallProgress(
+    handler: (payload: UninstallEventPayload) => void
+  ) {
+    return listen<UninstallEventPayload>("uninstall-progress", (e) => {
+      handler(e.payload);
+    });
+  }
 }
 
 export type UninstallEventPayload = {
@@ -55,12 +62,4 @@ export type UninstallEventPayload = {
   done: boolean;
   success?: boolean;
 };
-
-export function onUninstallProgress(
-  handler: (payload: UninstallEventPayload) => void
-) {
-  return listen<UninstallEventPayload>("uninstall-progress", (e) => {
-    handler(e.payload);
-  });
-}
-
+export const brew = new BrewClient();
