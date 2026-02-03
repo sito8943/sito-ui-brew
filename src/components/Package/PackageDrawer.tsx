@@ -115,7 +115,7 @@ export default function PackageDrawer() {
       footer={
         <div className="flex justify-end gap-2">
           <button
-            className="text-red-600 border border-red-200 hover:bg-red-50 px-3 py-1 rounded-md disabled:opacity-50"
+            className="text-red-600 border border-red-200 hover:bg-red-200 px-3 py-1 rounded-md disabled:opacity-50 transition duration-200"
             disabled={!canUninstall}
             onClick={() => setConfirming(true)}
           >
