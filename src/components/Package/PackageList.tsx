@@ -1,17 +1,13 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTrash,
-  faExternalLink,
-  faCircleInfo,
-} from "@fortawesome/free-solid-svg-icons";
+// icons used inside header/row components
 import { array } from "some-javascript-utils";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { fetchSizesMap } from "../../services/packages";
 
 // types
-import { PackageKind, PackageListItem } from "../../api/brew";
-import PackageKindChip from "./PackageKindChip";
-import IconButton from "../IconButton";
+import { PackageListItem } from "../../api/brew";
+import PackageTableHeader from "./PackageTableHeader";
+import PackageTableRow from "./PackageTableRow";
 import Loading from "../Loading";
 import { useTranslation } from "react-i18next";
 
@@ -31,7 +27,15 @@ export function PackageList({
   error,
 }: Props) {
   const { t } = useTranslation();
-  const [sizes, setSizes] = useState<Record<string, { human?: string | null }>>({});
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialSort =
+    (searchParams.get("sort") as "name" | "kind" | "size" | null) || "name";
+  const initialDir = searchParams.get("dir") === "desc" ? false : true;
+  const [sizes, setSizes] = useState<
+    Record<string, { bytes?: number | null; human?: string | null }>
+  >({});
+  const [sortKey, setSortKey] = useState<"name" | "kind" | "size">(initialSort);
+  const [sortAsc, setSortAsc] = useState<boolean>(initialDir);
   useEffect(() => {
     if (!items.length) {
       setSizes({});
@@ -40,9 +44,12 @@ export function PackageList({
     let active = true;
     fetchSizesMap(items).then((map) => {
       if (!active) return;
-      const reduced: Record<string, { human?: string | null }> = {};
+      const reduced: Record<
+        string,
+        { bytes?: number | null; human?: string | null }
+      > = {};
       Object.entries(map).forEach(([k, v]) => {
-        reduced[k] = { human: v.human };
+        reduced[k] = { bytes: v.bytes, human: v.human };
       });
       setSizes(reduced);
     });
@@ -50,6 +57,37 @@ export function PackageList({
       active = false;
     };
   }, [items]);
+  const rows = useMemo(() => {
+    const copy = items.slice();
+    if (sortKey === "name" || sortKey === "kind") {
+      return array.sortBy(copy, sortKey, sortAsc, null);
+    }
+    return array.sortBy(copy, undefined, sortAsc, (it) => {
+      const key = `${it.kind}:${it.name}`;
+      const bytes = sizes[key]?.bytes;
+      const fallback = sortAsc
+        ? Number.POSITIVE_INFINITY
+        : Number.NEGATIVE_INFINITY;
+      return typeof bytes === "number" ? bytes : fallback;
+    });
+  }, [items, sortKey, sortAsc, sizes]);
+
+  function handleSort(key: "name" | "kind" | "size") {
+    if (sortKey === key) setSortAsc((v) => !v);
+    else {
+      setSortKey(key);
+      setSortAsc(true);
+    }
+  }
+
+  // sync sort to URL
+  useEffect(() => {
+    const next = new URLSearchParams(searchParams);
+    next.set("sort", sortKey);
+    next.set("dir", sortAsc ? "asc" : "desc");
+    setSearchParams(next, { replace: true });
+  }, [sortKey, sortAsc]);
+
   if (loading)
     return (
       <div className="w-full py-4 flex justify-center">
@@ -59,77 +97,22 @@ export function PackageList({
   if (error) return <div className="list-error">{error}</div>;
   if (!items.length)
     return <div className="list-empty">{t("packages.table.empty")}</div>;
-
-  array.sortBy
-
   return (
     <table className="w-full">
-      <tr className="border-b border-gray-200">
-        <th className="text-start py-1 w-64">
-          <div className="flex gap-2">
-            <div className="min-w-19"></div>
-            <span>{t("packages.table.headers.name")}</span>
-          </div>
-        </th>
-        <th className="text-start">{t("packages.table.headers.kind")}</th>
-        <th className="text-start w-28">{t("packages.table.headers.size")}</th>
-      </tr>
-      {items.map((it, i) => (
-        <tr
+      <PackageTableHeader
+        sortKey={sortKey}
+        sortAsc={sortAsc}
+        onSort={handleSort}
+      />
+      {rows.map((it, i) => (
+        <PackageTableRow
           key={`${it.kind}:${it.name}`}
-          className={`w-full ${i % 2 ? "bg-primary/10" : ""}`}
-        >
-          <td className="py-1 pl-2">
-            <div className="flex justify-start items-center gap-2">
-              <div className="flex gap-1">
-                <IconButton
-                  variant="primary"
-                  onClick={() => onSelect(it)}
-                  title={t("_accessibility:actions.openDetails", {
-                    name: it.name,
-                  })}
-                  ariaLabel={t("_accessibility:actions.openDetails", {
-                    name: it.name,
-                  })}
-                >
-                  <FontAwesomeIcon icon={faCircleInfo} />
-                </IconButton>
-                <IconButton
-                  variant="danger"
-                  onClick={() => onUninstall && onUninstall(it)}
-                  title={t("_accessibility:actions.uninstall", {
-                    name: it.name,
-                  })}
-                  ariaLabel={t("_accessibility:actions.uninstall", {
-                    name: it.name,
-                  })}
-                >
-                  <FontAwesomeIcon icon={faTrash} />
-                </IconButton>
-              </div>
-              <a
-                className="hover:text-bg-primary group flex items-center gap-1"
-                href={`https://formulae.brew.sh/${it.kind}/${it.name}`}
-                target="_blank"
-                rel="noopener"
-              >
-                {it.name}
-                <FontAwesomeIcon
-                  icon={faExternalLink}
-                  className="-mt-0.5 text-xs group-hover:opacity-100 opacity-0 transition-opacity duration-200"
-                />
-              </a>
-            </div>
-          </td>
-          <td className="py-1">
-            <div className="flex justify-start items-center gap-1">
-              <PackageKindChip kind={it.kind as PackageKind} />
-            </div>
-          </td>
-          <td className="py-1 pr-2 text-sm text-right tabular-nums">
-            {sizes[`${it.kind}:${it.name}`]?.human ?? "—"}
-          </td>
-        </tr>
+          item={it}
+          index={i}
+          onSelect={onSelect}
+          onUninstall={onUninstall}
+          sizeHuman={sizes[`${it.kind}:${it.name}`]?.human ?? null}
+        />
       ))}
     </table>
   );
