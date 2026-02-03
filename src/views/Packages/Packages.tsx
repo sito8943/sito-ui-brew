@@ -44,16 +44,14 @@ function Packages() {
   }
 
   return (
-    <div className="shell">
-      <div className="content">
-        <div className="panel">
-          <PackageList
-            items={filtered}
-            loading={loading}
-            error={error}
-            onSelect={setSelected}
-          />
-        </div>
+    <div className="flex flex-col h-full p-4 gap-4">
+      <div className="border-1 border-gray-200 p-4 rounded-md">
+        <PackageList
+          items={filtered}
+          loading={loading}
+          error={error}
+          onSelect={setSelected}
+        />
       </div>
 
       <PackageDetails

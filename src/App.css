@@ -3,6 +3,19 @@
 @import "./styles/components.css";
 
 * {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+}
+
+* {
   scroll-behavior: smooth;
 }
 
@@ -54,7 +67,7 @@ label,
 main {
   height: 100%;
   width: 100%;
-  @apply bg-base-dark flex flex-col flex-1;
+  @apply flex flex-col flex-1;
 }
 
 .opacity {
