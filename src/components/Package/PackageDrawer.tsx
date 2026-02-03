@@ -10,8 +10,10 @@ import {
 import PackageKindChip from "./PackageKindChip";
 import InfoItem from "../InfoItem";
 import { useSelectedPackage } from "../../context/SelectedPackageContext";
+import { useTranslation } from "react-i18next";
 
 export default function PackageDrawer() {
+  const { t } = useTranslation();
   const { selected: item, close } = useSelectedPackage();
   const [info, setInfo] = useState<PackageInfo | null>(null);
   const [size, setSize] = useState<PackageSizeResult | null>(null);
@@ -117,13 +119,13 @@ export default function PackageDrawer() {
             disabled={!canUninstall}
             onClick={() => setConfirming(true)}
           >
-            {uninstalling ? "Uninstalling…" : "Uninstall"}
+            {uninstalling ? t("packages.drawer.actions.uninstalling") : t("packages.drawer.actions.uninstall")}
           </button>
         </div>
       }
     >
-      {loading && <div className="text-sm text-gray-500">Loading…</div>}
-      {error && <div className="text-sm text-red-600">{error}</div>}
+      {loading && <div className="text-sm text-gray-500">{t("packages.drawer.loading")}</div>}
+      {error && <div className="text-sm text-red-600">{t("packages.drawer.error")}</div>}
       {!loading && !error && info && (
         <div className="space-y-4">
           {info.description && (
@@ -133,14 +135,14 @@ export default function PackageDrawer() {
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <InfoItem label="Version" value={info.version ?? "—"} />
-            <InfoItem label="Tap" value={info.tap ?? "—"} />
-            <InfoItem label="Maintainers">
+            <InfoItem label={t("packages.drawer.labels.version")} value={info.version ?? "—"} />
+            <InfoItem label={t("packages.drawer.labels.tap")} value={info.tap ?? "—"} />
+            <InfoItem label={t("packages.drawer.labels.maintainers")}>
               <span className="truncate max-w-[240px]">
                 {info.maintainers?.join(", ") ?? "—"}
               </span>
             </InfoItem>
-            <InfoItem label="Homepage" className="sm:col-span-2">
+            <InfoItem label={t("packages.drawer.labels.homepage")} className="sm:col-span-2">
               {info.homepage ? (
                 <a
                   className="hover:text-bg-primary underline truncate max-w-[240px]"
@@ -154,11 +156,7 @@ export default function PackageDrawer() {
                 "—"
               )}
             </InfoItem>
-            <InfoItem
-              label="Size"
-              value={size?.human ?? "—"}
-              className="sm:col-span-2"
-            />
+            <InfoItem label={t("packages.drawer.labels.size")} value={size?.human ?? "—"} className="sm:col-span-2" />
           </div>
 
           {progress.length > 0 && (
@@ -180,24 +178,22 @@ export default function PackageDrawer() {
             onClick={() => setConfirming(false)}
           />
           <div className="absolute inset-x-4 top-24 rounded-md border border-gray-200 bg-white shadow-lg p-4 max-w-md mx-auto">
-            <div className="text-base font-semibold mb-1">
-              Confirm uninstall
-            </div>
+            <div className="text-base font-semibold mb-1">{t("packages.drawer.actions.confirmTitle")}</div>
             <div className="text-sm mb-3">
-              Remove {name} ({kind}) from this system?
+              {t("packages.drawer.actions.confirmMessage", { name, kind })}
             </div>
             <div className="flex justify-end gap-2">
               <button
                 className="px-3 py-1 rounded-md border border-gray-200"
                 onClick={() => setConfirming(false)}
               >
-                Cancel
+                {t("packages.drawer.actions.cancel")}
               </button>
               <button
                 className="px-3 py-1 rounded-md border border-red-200 text-red-600 hover:bg-red-50"
                 onClick={handleUninstall}
               >
-                Uninstall
+                {t("packages.drawer.actions.uninstall")}
               </button>
             </div>
           </div>

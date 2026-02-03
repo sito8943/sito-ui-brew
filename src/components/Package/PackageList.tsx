@@ -10,6 +10,7 @@ import {
 import { PackageKind, PackageListItem } from "../../api/brew";
 import PackageKindChip from "./PackageKindChip";
 import IconButton from "../IconButton";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   items: PackageListItem[];
@@ -26,6 +27,7 @@ export function PackageList({
   loading,
   error,
 }: Props) {
+  const { t } = useTranslation();
   if (loading)
     return (
       <div className="w-full text-center py-4">
@@ -34,7 +36,7 @@ export function PackageList({
     );
   if (error) return <div className="list-error">{error}</div>;
   if (!items.length)
-    return <div className="list-empty">No packages found.</div>;
+    return <div className="list-empty">{t("packages.table.empty")}</div>;
 
   return (
     <table className="w-full">
@@ -42,10 +44,10 @@ export function PackageList({
         <th className="text-start py-1 w-64">
           <div className="flex gap-2">
             <div className="min-w-19"></div>
-            <span>Name</span>
+            <span>{t("packages.table.headers.name")}</span>
           </div>
         </th>
-        <th className="text-start">Kind</th>
+        <th className="text-start">{t("packages.table.headers.kind")}</th>
       </tr>
       {items.map((it, i) => (
         <tr
@@ -58,16 +60,16 @@ export function PackageList({
                 <IconButton
                   variant="primary"
                   onClick={() => onSelect(it)}
-                  title={it.name}
-                  ariaLabel={`Open details for ${it.name}`}
+                  title={t("_accessibility:actions.openDetails", { name: it.name })}
+                  ariaLabel={t("_accessibility:actions.openDetails", { name: it.name })}
                 >
                   <FontAwesomeIcon icon={faCircleInfo} />
                 </IconButton>
                 <IconButton
                   variant="danger"
                   onClick={() => onUninstall && onUninstall(it)}
-                  title={`Uninstall ${it.name}`}
-                  ariaLabel={`Uninstall ${it.name}`}
+                  title={t("_accessibility:actions.uninstall", { name: it.name })}
+                  ariaLabel={t("_accessibility:actions.uninstall", { name: it.name })}
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </IconButton>
