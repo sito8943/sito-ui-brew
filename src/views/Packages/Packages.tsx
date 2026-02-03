@@ -55,7 +55,7 @@ function Packages() {
 
   return (
     <div className="flex flex-col h-full p-4 gap-4">
-      <div className="border-1 border-gray-200 p-4 rounded-md">
+      <div className="border-1 border-gray-200 p-4 rounded-md h-[calc(100vh-166px)] overflow-y-auto">
         <PackageList
           items={filtered}
           loading={loading}

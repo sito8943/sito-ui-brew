@@ -1,15 +1,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTrash,
-  faSpinner,
-  faExternalLink,
-  faCircleInfo,
-} from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faExternalLink, faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 
 // types
 import { PackageKind, PackageListItem } from "../../api/brew";
 import PackageKindChip from "./PackageKindChip";
 import IconButton from "../IconButton";
+import Loading from "../Loading";
 import { useTranslation } from "react-i18next";
 
 type Props = {
@@ -30,8 +26,8 @@ export function PackageList({
   const { t } = useTranslation();
   if (loading)
     return (
-      <div className="w-full text-center py-4">
-        <FontAwesomeIcon icon={faSpinner} spin />
+      <div className="w-full py-4 flex justify-center">
+        <Loading variant="muted" />
       </div>
     );
   if (error) return <div className="list-error">{error}</div>;

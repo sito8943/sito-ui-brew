@@ -6,6 +6,7 @@ import { useSelectedPackage } from "../../context/SelectedPackageContext";
 import { useTranslation } from "react-i18next";
 import { PackageKind } from "../../api/brew";
 import { PackageDrawerController, PackageDrawerState } from "../../controllers/packages/PackageDrawerController";
+import Loading from "../Loading";
 
 export default function PackageDrawer() {
   const { t } = useTranslation();
@@ -50,7 +51,7 @@ export default function PackageDrawer() {
         </div>
       }
     >
-      {loading && <div className="text-sm text-gray-500">{t("packages.drawer.loading")}</div>}
+      {loading && <Loading variant="muted" className="text-sm">{t("packages.drawer.loading")}</Loading>}
       {error && <div className="text-sm text-red-600">{t("packages.drawer.error")}</div>}
       {!loading && !error && info && (
         <div className="space-y-4">
