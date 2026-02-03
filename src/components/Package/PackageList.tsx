@@ -1,5 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faEdit, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import {
+  faTrash,
+  faSpinner,
+  faExternalLink,
+  faCircleInfo,
+} from "@fortawesome/free-solid-svg-icons";
 
 // types
 import { PackageListItem } from "../../api/brew";
@@ -32,8 +37,12 @@ export function PackageList({
   return (
     <table className="w-full">
       <tr className="border-b border-gray-200">
-        <th></th>
-        <th className="text-start py-1">Name</th>
+        <th className="text-start py-1 w-64">
+          <div className="flex gap-2">
+            <div className="min-w-19"></div>
+            <span>Name</span>
+          </div>
+        </th>
         <th className="text-start">Kind</th>
       </tr>
       {items.map((it, i) => (
@@ -42,20 +51,53 @@ export function PackageList({
           className={`w-full ${i % 2 ? "bg-primary/10" : ""}`}
         >
           <td className="py-1 pl-2">
-            <div className="flex gap-2">
-              <button onClick={() => onSelect(it)} title={it.name}>
-                <FontAwesomeIcon icon={faEdit} />
-              </button>
-              <button
-                onClick={() => onUninstall && onUninstall(it)}
-                title={`Uninstall ${it.name}`}
+            <div className="flex justify-start items-center gap-2">
+              <div className="flex gap-1">
+                <button
+                  className="text-bg-primary hover:text-blue-500 hover:bg-bg-primary/10 transition-colors duration-200 w-8 h-8 flex items-center justify-center rounded-full"
+                  onClick={() => onSelect(it)}
+                  title={it.name}
+                >
+                  <FontAwesomeIcon icon={faCircleInfo} />
+                </button>
+                <button
+                  className="text-bg-primary hover:text-red-500 hover:bg-bg-error/10 transition-colors duration-200 w-8 h-8 flex items-center justify-center rounded-full"
+                  onClick={() => onUninstall && onUninstall(it)}
+                  title={`Uninstall ${it.name}`}
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </button>
+              </div>
+              <a
+                className="hover:text-bg-primary group flex items-center gap-1"
+                href={`https://formulae.brew.sh/${it.kind}/${it.name}`}
+                target="_blank"
+                rel="noopener"
               >
-                <FontAwesomeIcon icon={faTrash} />
-              </button>
+                {it.name}
+                <FontAwesomeIcon
+                  icon={faExternalLink}
+                  className="-mt-0.5 text-xs group-hover:opacity-100 opacity-0 transition-opacity duration-200"
+                />
+              </a>
             </div>
           </td>
-          <td className="">{it.name}</td>
-          <td className={`${it.kind}`}>{it.kind}</td>
+          <td className="py-1">
+            <div className="flex justify-start items-center gap-1 group">
+              <a
+                className={`rounded-4xl px-3 py-0.5 ${it.kind} hover:bg-primary`}
+                href={`https://formulae.brew.sh/${it.kind}/`}
+                target="_blank"
+                rel="noopener"
+              >
+                {it.kind}
+                <FontAwesomeIcon
+                  icon={faExternalLink}
+                  className="ml-1 -mt-0.5 text-xs group-hover:opacity-100 opacity-0 transition-opacity duration-200"
+                />
+              </a>
+            </div>
+          </td>
         </tr>
       ))}
     </table>

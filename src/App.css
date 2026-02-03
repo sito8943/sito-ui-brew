@@ -194,3 +194,12 @@ main {
     transform: scale(1);
   }
 }
+
+.cask {
+  color: #cba6f7;
+  background-color: #000000;
+}
+.formula {
+  color: #7dd3fc;
+  background-color: #000000;
+}
