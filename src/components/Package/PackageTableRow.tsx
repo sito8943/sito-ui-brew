@@ -1,8 +1,9 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleInfo, faExternalLink, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo, faExternalLink, faTrash, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "react-i18next";
 import type { PackageKind, PackageListItem } from "../../api/brew";
 import { useSelectedPackage } from "../../context/SelectedPackageContext";
+import { useEffect, useState } from "react";
 import IconButton from "../IconButton";
 import PackageKindChip from "./PackageKindChip";
 
@@ -16,7 +17,17 @@ type Props = {
 
 export default function PackageTableRow({ item, index, onSelect, onUninstall, sizeHuman }: Props) {
   const { t } = useTranslation();
-  const { promptUninstall } = useSelectedPackage();
+  const { promptUninstall, selected, intent } = useSelectedPackage();
+  const [openingDetails, setOpeningDetails] = useState(false);
+  const [openingUninstall, setOpeningUninstall] = useState(false);
+
+  useEffect(() => {
+    if (selected?.name === item.name) {
+      // Drawer has been requested for this item; stop any row-level loading
+      setOpeningDetails(false);
+      if (intent === "uninstall") setOpeningUninstall(false);
+    }
+  }, [selected, intent, item.name]);
   return (
     <tr key={`${item.kind}:${item.name}`} className={`w-full ${index % 2 ? "bg-primary/10" : ""}`}>
       <td className="py-1 pl-2">
@@ -24,19 +35,33 @@ export default function PackageTableRow({ item, index, onSelect, onUninstall, si
           <div className="flex gap-1">
             <IconButton
               variant="primary"
-              onClick={() => onSelect(item)}
+              onClick={() => { setOpeningDetails(true); onSelect(item); }}
+              disabled={openingDetails}
               title={t("_accessibility:actions.openDetails", { name: item.name })}
               ariaLabel={t("_accessibility:actions.openDetails", { name: item.name })}
             >
-              <FontAwesomeIcon icon={faCircleInfo} />
+              {openingDetails ? (
+                <FontAwesomeIcon icon={faSpinner} spin />
+              ) : (
+                <FontAwesomeIcon icon={faCircleInfo} />
+              )}
             </IconButton>
             <IconButton
               variant="danger"
-              onClick={() => (promptUninstall ? promptUninstall(item) : onUninstall && onUninstall(item))}
+              onClick={() => {
+                setOpeningUninstall(true);
+                if (promptUninstall) promptUninstall(item);
+                else if (onUninstall) onUninstall(item);
+              }}
+              disabled={openingUninstall}
               title={t("_accessibility:actions.uninstall", { name: item.name })}
               ariaLabel={t("_accessibility:actions.uninstall", { name: item.name })}
             >
-              <FontAwesomeIcon icon={faTrash} />
+              {openingUninstall ? (
+                <FontAwesomeIcon icon={faSpinner} spin />
+              ) : (
+                <FontAwesomeIcon icon={faTrash} />
+              )}
             </IconButton>
           </div>
           <a

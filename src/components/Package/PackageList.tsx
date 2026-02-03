@@ -75,8 +75,6 @@ export function PackageList({
       </div>
     );
   if (error) return <div className="list-error">{error}</div>;
-  if (!items.length)
-    return <div className="list-empty">{t("packages.table.empty")}</div>;
   return (
     <table className="w-full">
       <FilterChipsRow />
@@ -85,6 +83,13 @@ export function PackageList({
         sortAsc={sortAsc}
         onSort={handleSort}
       />
+      {rows.length === 0 && (
+        <tr>
+          <td colSpan={3} className="py-2 text-sm text-gray-500">
+            {t("packages.table.empty")}
+          </td>
+        </tr>
+      )}
       {rows.map((it, i) => (
         <PackageTableRow
           key={`${it.kind}:${it.name}`}

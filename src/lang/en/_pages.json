@@ -1,7 +1,7 @@
 {
   "packages": {
     "filters": {
-      "query": "q",
+      "query": "name",
       "kind": "kind",
       "sizeMin": "size ≥ {{value}}MB",
       "sizeMax": "size ≤ {{value}}MB",
