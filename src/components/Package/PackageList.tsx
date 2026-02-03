@@ -2,7 +2,7 @@
 import { array } from "some-javascript-utils";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { fetchSizesMap } from "../../services/packages";
+import usePackageSizes from "../../hooks/usePackageSizes";
 
 // types
 import { PackageListItem } from "../../api/brew";
@@ -34,36 +34,9 @@ export function PackageList({
   const initialSort =
     (searchParams.get("sort") as "name" | "kind" | "size" | null) || "name";
   const initialDir = searchParams.get("dir") === "desc" ? false : true;
-  const [sizes, setSizes] = useState<
-    Record<string, { bytes?: number | null; human?: string | null }>
-  >({});
+  const sizes = usePackageSizes(items, sizesMap);
   const [sortKey, setSortKey] = useState<"name" | "kind" | "size">(initialSort);
   const [sortAsc, setSortAsc] = useState<boolean>(initialDir);
-  useEffect(() => {
-    if (sizesMap) {
-      setSizes(sizesMap);
-      return;
-    }
-    if (!items.length) {
-      setSizes({});
-      return;
-    }
-    let active = true;
-    fetchSizesMap(items).then((map) => {
-      if (!active) return;
-      const reduced: Record<
-        string,
-        { bytes?: number | null; human?: string | null }
-      > = {};
-      Object.entries(map).forEach(([k, v]) => {
-        reduced[k] = { bytes: v.bytes, human: v.human };
-      });
-      setSizes(reduced);
-    });
-    return () => {
-      active = false;
-    };
-  }, [items, sizesMap]);
   const rows = useMemo(() => {
     const copy = items.slice();
     if (sortKey === "name" || sortKey === "kind") {
