@@ -1,8 +1,5 @@
-// icons used inside header/row components
-import { array } from "some-javascript-utils";
-import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import usePackageSizes from "../../hooks/usePackageSizes";
+import useTableSort from "../../hooks/useTableSort";
 
 // types
 import { PackageListItem } from "../../api/brew";
@@ -30,43 +27,8 @@ export function PackageList({
   sizesMap,
 }: Props) {
   const { t } = useTranslation();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const initialSort =
-    (searchParams.get("sort") as "name" | "kind" | "size" | null) || "name";
-  const initialDir = searchParams.get("dir") === "desc" ? false : true;
   const sizes = usePackageSizes(items, sizesMap);
-  const [sortKey, setSortKey] = useState<"name" | "kind" | "size">(initialSort);
-  const [sortAsc, setSortAsc] = useState<boolean>(initialDir);
-  const rows = useMemo(() => {
-    const copy = items.slice();
-    if (sortKey === "name" || sortKey === "kind") {
-      return array.sortBy(copy, sortKey, sortAsc, null);
-    }
-    return array.sortBy(copy, undefined, sortAsc, (it) => {
-      const key = `${it.kind}:${it.name}`;
-      const bytes = sizes[key]?.bytes;
-      const fallback = sortAsc
-        ? Number.POSITIVE_INFINITY
-        : Number.NEGATIVE_INFINITY;
-      return typeof bytes === "number" ? bytes : fallback;
-    });
-  }, [items, sortKey, sortAsc, sizes]);
-
-  function handleSort(key: "name" | "kind" | "size") {
-    if (sortKey === key) setSortAsc((v) => !v);
-    else {
-      setSortKey(key);
-      setSortAsc(true);
-    }
-  }
-
-  // sync sort to URL
-  useEffect(() => {
-    const next = new URLSearchParams(searchParams);
-    next.set("sort", sortKey);
-    next.set("dir", sortAsc ? "asc" : "desc");
-    setSearchParams(next, { replace: true });
-  }, [sortKey, sortAsc]);
+  const { rows, sortKey, sortAsc, handleSort } = useTableSort(items, sizes);
 
   if (loading)
     return (

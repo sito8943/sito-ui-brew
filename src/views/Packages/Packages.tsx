@@ -1,9 +1,10 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 
 // api
 import { brew, PackageListItem } from "../../api/brew";
 import { useSearch } from "../../context/SearchContext";
-import { fetchSizesMap } from "../../services/packages";
+import usePackageSizes from "../../hooks/usePackageSizes";
+import usePackagesFiltered from "../../hooks/usePackagesFiltered";
 
 // components
 import { PackageList } from "../../components";
@@ -11,11 +12,11 @@ import { useSelectedPackage } from "../../context/SelectedPackageContext";
 
 function Packages() {
   const [items, setItems] = useState<PackageListItem[]>([]);
-  const [sizes, setSizes] = useState<Record<string, { bytes?: number | null; human?: string | null }>>({});
+  const [sizesState, setSizesState] = useState<Record<string, { bytes?: number | null; human?: string | null }>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { open: openPackage } = useSelectedPackage();
-  const { debouncedQuery, kinds, sizeMinMB, sizeMaxMB, refreshTick } = useSearch();
+  const { refreshTick } = useSearch();
 
   useEffect(() => {
     let active = true;
@@ -36,25 +37,11 @@ function Packages() {
     };
   }, [refreshTick]);
 
-  // fetch sizes after list loads
+  // sizes hook
+  const sizes = usePackageSizes(items);
   useEffect(() => {
-    let active = true;
-    if (!items.length) {
-      setSizes({});
-      return;
-    }
-    fetchSizesMap(items).then((map) => {
-      if (!active) return;
-      const reduced: Record<string, { bytes?: number | null; human?: string | null }> = {};
-      Object.entries(map).forEach(([k, v]) => {
-        reduced[k] = { bytes: v.bytes, human: v.human };
-      });
-      setSizes(reduced);
-    });
-    return () => {
-      active = false;
-    };
-  }, [items]);
+    setSizesState(sizes);
+  }, [sizes]);
 
   // Remove uninstalled item when notified by drawer
   useEffect(() => {
@@ -68,24 +55,7 @@ function Packages() {
     return () => window.removeEventListener("package-uninstalled", onUninstalled as EventListener);
   }, []);
 
-  const filtered = useMemo(() => {
-    const q = debouncedQuery.trim().toLowerCase();
-    const hasKind = kinds.size > 0;
-    const minBytes = typeof sizeMinMB === "number" ? sizeMinMB * 1024 * 1024 : null;
-    const maxBytes = typeof sizeMaxMB === "number" ? sizeMaxMB * 1024 * 1024 : null;
-    return items.filter((i) => {
-      if (q && !i.name.toLowerCase().includes(q)) return false;
-      if (hasKind && !kinds.has(i.kind)) return false;
-      if (minBytes != null || maxBytes != null) {
-        const key = `${i.kind}:${i.name}`;
-        const bytes = sizes[key]?.bytes ?? null;
-        if (bytes == null) return false; // exclude unknown when filtering by size
-        if (minBytes != null && bytes < minBytes) return false;
-        if (maxBytes != null && bytes > maxBytes) return false;
-      }
-      return true;
-    });
-  }, [debouncedQuery, kinds, sizeMinMB, sizeMaxMB, items, sizes]);
+  const filtered = usePackagesFiltered(items, sizes);
 
   // When uninstall succeeds, a global event updates the list (see useEffect below)
 
@@ -97,7 +67,7 @@ function Packages() {
           loading={loading}
           error={error}
           onSelect={openPackage}
-          sizesMap={sizes}
+          sizesMap={sizesState}
         />
       </div>
       {/* Uninstall handling remains here if needed later */}
